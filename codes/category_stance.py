@@ -11,6 +11,8 @@ plt.rcParams['axes.prop_cycle'] = cycler(color=['tab:brown'])
 plt.rcParams['patch.edgecolor'] = 'black'  # Border color
 plt.rcParams['patch.linewidth'] = 1.5     # Border width
 
+category_stance_path = "../images/category_stance.png"
+
 def category_stance(df):
     
     df_cat = pd.DataFrame()
@@ -31,8 +33,6 @@ def category_stance(df):
     
     X = ['SS', 'HS', 'FS', 'ES']  # por exemplo
     plot_continuous_grid(df_cat, X)
-    
-    plt.show()
 
 def plot_continuous_grid(df_temp, columns, bins=10):
     if len(columns) != 4:
@@ -56,9 +56,9 @@ def plot_continuous_grid(df_temp, columns, bins=10):
         # 4) Plotar histograma
         sns.histplot(df_temp[col], bins=bin_edges, kde=True, ax=ax)
 
-        ax.set_title(f'Distribuição de {col}', fontsize=14)
-        ax.set_xlabel(col, fontsize=12)
-        ax.set_ylabel('Frequência', fontsize=12)
+        ax.set_title(f'Distribution of combined {col}', fontsize=14)
+        ax.set_xlabel(f"Combined {col}", fontsize=12)
+        ax.set_ylabel('Frequency', fontsize=12)
         ax.tick_params(axis='both', labelsize=10)
 
         # Limite superior automático baseado nos dados
@@ -71,5 +71,6 @@ def plot_continuous_grid(df_temp, columns, bins=10):
                 ax.text(bin_center, c, f'{pct[j]:.1f}%', ha='center', va='bottom', fontsize=10)
 
     plt.tight_layout()
+    plt.savefig(category_stance_path)
     plt.show()
 

@@ -13,15 +13,15 @@ plt.rcParams['axes.prop_cycle'] = cycler(color=['tab:brown'])
 plt.rcParams['patch.edgecolor'] = 'black'  # Border color
 plt.rcParams['patch.linewidth'] = 1.5     # Border width
 
-
+lr_confusion_path = "../images/lr_confusion.png"
+lr_coefs_path = "../images/lr_coefs.png"
+lr_roc_path = "../images/lr_roc.png"
 
 def logistic_regression(X, y, X_train, y_train, X_test, y_test):
     # Modelo Regressão Logística
     log_model = LogisticRegression(max_iter=1000)
     log_model.fit(X_train, y_train)
-    y_pred_log = log_model.predict(X_test)
-    
-    
+          
     # Validação cruzada com regressão logística para garantir robustez
     cv_scores = cross_val_score(log_model, X, y, cv=10, scoring='accuracy')
     cv_mean_accuracy = cv_scores.mean()
@@ -44,12 +44,12 @@ def logistic_regression(X, y, X_train, y_train, X_test, y_test):
     print(f"Best Score: {best_score}")
     
     # Treinar o modelo otimizado com melhores hiperparâmetros
-    optimized_log_model = LogisticRegression(C=best_params["C"], penalty=best_params["penalty"], solver=best_params["solver"], max_iter=1000)
-    optimized_log_model.fit(X, y)
-    y_pred_log = optimized_log_model.predict(X_test)
+    opt_log_model = LogisticRegression(C=best_params["C"], penalty=best_params["penalty"], solver=best_params["solver"], max_iter=1000)
+    opt_log_model.fit(X, y)
+    y_pred_log = opt_log_model.predict(X_test)
 
     # Extrair coeficientes (importância das features)
-    feature_importance = pd.Series(optimized_log_model.coef_[0], index=X.columns)
+    feature_importance = pd.Series(opt_log_model.coef_[0], index=X.columns)
     feature_importance = feature_importance.sort_values(ascending=True)
     
     # reports ----------------------------------------------------------------
@@ -73,11 +73,12 @@ def logistic_regression(X, y, X_train, y_train, X_test, y_test):
     plt.xticks(ticks=[0.5,1.5], labels=['Goofy (0)', 'Regular (1)'])
     plt.yticks(ticks=[0.5,1.5], labels=['Goofy (0)', 'Regular (1)'])
     plt.tight_layout()
+    plt.savefig(lr_confusion_path)
     plt.show()
 
     # ----- Importance
     # Obter coeficientes
-    coefficients = optimized_log_model.coef_[0]
+    coefficients = log_model.coef_[0]
     feature_names = X_test.columns
 
     # DataFrame com ordenação
@@ -100,12 +101,13 @@ def logistic_regression(X, y, X_train, y_train, X_test, y_test):
     plt.xlabel('Coefficient Value')
     plt.title('Logistic Regression – Feature Coefficients')
     plt.tight_layout()
+    plt.savefig(lr_coefs_path)
     plt.show()
 
 
     # ------- ROC
     # Obter probabilidades da classe positiva (Regular = 1)
-    y_proba_lr = optimized_log_model.predict_proba(X_test)[:, 1]
+    y_proba_lr = log_model.predict_proba(X_test)[:, 1]
 
     # Calcular ROC
     fpr_lr, tpr_lr, thresholds_lr = roc_curve(y_test, y_proba_lr)
@@ -121,6 +123,7 @@ def logistic_regression(X, y, X_train, y_train, X_test, y_test):
     plt.legend(loc="lower right")
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig(lr_roc_path)
     plt.show()
     
-    return optimized_log_model, fpr_lr, tpr_lr, thresholds_lr
+    return opt_log_model, fpr_lr, tpr_lr, thresholds_lr

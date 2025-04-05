@@ -26,6 +26,7 @@ if __name__ == "__main__":
       
     df_init = pp.pre_processing(path)
     
+    
     # Remove the columns that is not lateralities to be analyzed
     columns_to_drop = ['friends_share_stance', 'parents_share_stance', 'fav_skater_share_stance',
                     'changed_stance', 'stance_awareness', 'consistent_stance', "expertise",
@@ -35,10 +36,11 @@ if __name__ == "__main__":
                     "ollie_foot",
                     "bowl_foot",
                     "snowboard_foot",
-                    "surf_foot",
-                    "consent"]
+                    "surf_foot"]
     df = df_init.copy()
     df.drop(columns=columns_to_drop, inplace=True)
+    df.to_csv(f"teste.csv", index=False)
+
 
     # filter only the goofy and regular skaters
     df = df[df["skate_stance"].isin([-10, 10])]

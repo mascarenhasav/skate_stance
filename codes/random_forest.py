@@ -13,6 +13,9 @@ plt.rcParams['axes.prop_cycle'] = cycler(color=['tab:brown'])
 plt.rcParams['patch.edgecolor'] = 'black'  # Border color
 plt.rcParams['patch.linewidth'] = 1.5     # Border width
 
+rf_confusion_path = "../images/rf_confusion.png"
+rf_importance_path = "../images/rf_importance.png"
+rf_roc_path = "../images/rf_roc.png"
 
 def random_forest(X, y, X_train, y_train, X_test, y_test):
     # Modelo RandomForest
@@ -40,6 +43,7 @@ def random_forest(X, y, X_train, y_train, X_test, y_test):
     plt.xticks(ticks=[0.5,1.5], labels=['Goofy (0)', 'Regular (1)'])
     plt.yticks(ticks=[0.5,1.5], labels=['Goofy (0)', 'Regular (1)'])
     plt.tight_layout()
+    plt.savefig(rf_confusion_path)
     plt.show()
 
     # ----- Importance
@@ -64,6 +68,7 @@ def random_forest(X, y, X_train, y_train, X_test, y_test):
     plt.xlabel('Feature Importance')
     plt.title('Random Forest – Feature Importance')
     plt.tight_layout()
+    plt.savefig(rf_importance_path)
     plt.show()
 
     # ------- ROC
@@ -84,6 +89,7 @@ def random_forest(X, y, X_train, y_train, X_test, y_test):
     plt.legend(loc="lower right")
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig(rf_roc_path)
     plt.show()
     
     return rf_model, fpr, tpr, thresholds

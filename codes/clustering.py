@@ -13,8 +13,9 @@ plt.rcParams['axes.prop_cycle'] = cycler(color=['tab:brown'])
 plt.rcParams['patch.edgecolor'] = 'black'  # Border color
 plt.rcParams['patch.linewidth'] = 1.5     # Border width
 
-path_clustering_number = "../images/clustering_number.png"
 path_clustering = "../images/clusters.png"
+path_clustering_number = "../images/clusters_number.png"
+path_clustering_stance = "../images/clusters_stance.png"
 
 def clustering(df):
     # remove some columns
@@ -111,10 +112,15 @@ def clustering(df):
 
     ax.set_ylabel('Percentage')
     ax.set_xlabel('Cluster')
-    ax.legend(title='Skate Stance', labels=['Goofy', 'Regular'])
+    ax.legend(
+        title='Skate Stance', 
+        labels=['Goofy', 'Regular'],
+        fontsize=14,           # Tamanho da fonte dos itens da legenda
+        title_fontsize=16      # Tamanho da fonte do título da legenda
+    )
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.xticks(rotation=0)
     plt.tight_layout()
-    plt.savefig('../images/stance_distribution_clusters.png')
+    plt.savefig(path_clustering_stance)
     plt.show()
 

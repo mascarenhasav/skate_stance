@@ -81,14 +81,42 @@ def pre_processing(path):
         'Identity Locality (Mark ONLY one with which you IDENTIFY as your home locality)':'home_locality'
     }, inplace=True)
 
+    df_init = df_init[(df_init['consent'] != "I am not 18 years of age or older, and/or, I do not agree to participate.")]
+    
     # remove unnecessary columns
-    cols_to_drop = ['ID', 'Start time', 'Completion time', 'Email', 'Name', 'Last modified time', 'Question']
+    cols_to_drop = ['ID', 'Start time', 'Completion time', 'Email', 'Name', 'Last modified time', 'Question', "consent"]
     for c in cols_to_drop:
         if c in df_init.columns:
             df_init.drop(columns=c, inplace=True, errors='ignore')
+            
+    regular_mongo = "Left foot in front, push with left right foot (regular mongo stance)"
+    goofy_mongo = "Right foot in front, push with front right foot (goofy mongo stance)"
+    either = "Either right foot in front or left foot in front, equally    "
+            
+    df_init = df_init[~df_init['skate_stance'].isna() & (df_init['skate_stance'] != '') & 
+                      (df_init['skate_stance'] != regular_mongo) & 
+                      (df_init['skate_stance'] != goofy_mongo) &
+                      (df_init['skate_stance'] != either)]
 
+    # convert to regular and goofy
     scale_map = {
-        'Left foot in front, push with back right foot (regular stance)' : -10,
+        'Left foot in front, push with back right foot (regular stance)' : "regular",
+        'Right foot in front, push with back left foot (goofy stance)' : "goofy",
+    }
+    df_init['skate_stance'] = df_init['skate_stance'].map(scale_map)
+    
+    # convert to float
+    scale_map = {
+        "regular": -10,
+        "goofy": 10
+    }
+    df_init['skate_stance'] = df_init['skate_stance'].map(scale_map)
+
+    # map the lateralities to numerical values
+    # 10 means that use the right side to do the things
+    # in the case of stance questions, 10 means that is goofy
+    
+    scale_map = {
         'Always Left': -10,
         'Always  Left': -10,
         'Left    ': -10,
@@ -104,17 +132,18 @@ def pre_processing(path):
         'Right    ': 10,
         'Always Right    ': 10,
         'Always Right': 10,
-        'Right foot in front, push with back left foot (goofy stance)' : 10,
     }
 
     # mapping the lateralities
-    cols_scale = ['skate_stance','ollie_foot','bowl_foot','downhill_foot','snowboard_foot','surf_foot',
+    cols_scale = ['ollie_foot','bowl_foot','downhill_foot','snowboard_foot','surf_foot',
                 'hand_write','hand_throw','hand_hammer','foot_kick','foot_sweep','foot_pedal',
                 'foot_chair']
     for c in cols_scale:
         if c in df_init.columns:
             df_init[c] = df_init[c].map(scale_map)
 
+
+    df_init.to_csv(f"teste.csv", index=False)
 
     # transform some answers to NaN
     df_init.replace({
@@ -123,22 +152,28 @@ def pre_processing(path):
         'I do not surf enough to know': np.nan
     }, inplace=True)
 
-    # mapping the eye tests
-    likert_map = {
+
+    # map eye test 1
+    # in this case, the answer is the eye dominant
+    # so, right = -10
+    scale_map ={
+        'Right    ': 10,
+        'Neither': 0,
         'Left    ': -10,
+    }
+    df_init['eye_test1'] = df_init['eye_test1'].map(scale_map)
+      
+    # in the eye test 2
+    # the answer is the eye non dominant
+    scale_map = {
         'Always Right    ': -10,
         'Mostly Right    ': -5,
-        'Neither': 0,
         'Both Equally    ': 0,
         'Mostly Left    ': 5,
         'Always  Left': 10,
-        'Right    ': 10,
     }
-    likert_cols = ['eye_test1','eye_test2']
-    for lc in likert_cols:
-        if lc in df_init.columns:
-            df_init[lc] = df_init[lc].map(likert_map)
-
+    df_init['eye_test2'] = df_init['eye_test2'].map(scale_map)
+   
     # mapping the remain variavles
     likert_map = {
         'Strongly disagree': -10,
@@ -164,11 +199,9 @@ def pre_processing(path):
 
     if 'years_skate' in df_init.columns:
         df_init['years_skate'] = df_init['years_skate'].apply(parse_years)
-
-
+    
     # possible values found before: adjust with the actual in the new dataset
     df_init['expertise'].unique()
-
     # in the case of find values like "Advanced (I can occasionally land complex tricks)", etc.
     # map according to the complexity, same as before
     expertise_map = {
@@ -179,12 +212,22 @@ def pre_processing(path):
         'Expert (I can consistently land complex tricks)': 8,
         'Sponsored/Pro (I regularly receive skateboard products for free from companies)': 10
     }
-
     df_init['expertise'] = df_init['expertise'].replace(expertise_map)
     
+    '''
+    # remove columns that will not be analyzed this time
+    cols_to_drop = ['friends_share_stance','parents_share_stance','fav_skater_share_stance',
+                    'changed_stance','stance_awareness','consistent_stance', "years_skate", "expertise",
+                    "freq_skate","gender","race","age","ethnicity","residence_locality","home_locality"]
+    for c in cols_to_drop:
+        if c in df_init.columns:
+            df_init.drop(columns=c, inplace=True, errors='ignore')
+    #df_init = df_init.dropna()
+    '''
         
     # Convert the columns to float
-    df_init = convert_to_float(df_init)
+    #df_init = convert_to_float(df_init)
+    
     newPath = "../data/df_converted.csv"
 
     # shows informations about the converted dataframe
@@ -194,7 +237,9 @@ def pre_processing(path):
     #print(df_init.info())
     #time.sleep(2)
 
-    df_init.to_csv("{newPath}", index=False)
+    df_init.to_csv(newPath, index=False)
     print(f"[PREPROCESSING] new dataframe was saved in {newPath}")
     
     return df_init
+
+pre_processing("../data/data.csv")
