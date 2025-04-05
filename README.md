@@ -2,6 +2,9 @@
 
 This repository presents a complete analysis pipeline investigating **human lateralities** and their relationship to **skateboarding stance** (Goofy vs. Regular). The research combines exploratory data analysis, statistical inference, machine learning classification, and unsupervised clustering techniques to understand whether skate stance can be predicted from typical laterality patterns (hand, foot, eye dominance).
 
+You can also check the data in real time on [Skate Stance](https://mascarenhasav.github.io/skate_stance)
+
+
 ## 🧠 Summary of the Research
 
 Human laterality describes consistent preferences for one side of the body, such as handedness or footedness. This project explores whether **skate stance** is just another expression of laterality or a unique motor behavior. Using questionnaire data scored from `-10` (always left) to `+10` (always right), we performed:
