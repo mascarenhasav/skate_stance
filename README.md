@@ -1,5 +1,7 @@
 # 🛹 Skate Stance and Human Laterality Analysis
 
+[![DOI](https://zenodo.org/badge/959977798.svg)](https://doi.org/10.5281/zenodo.15675900)
+
 This repository presents a complete analysis pipeline investigating **human lateralities** and their relationship to **skateboarding stance** (Goofy vs. Regular). The research combines exploratory data analysis, statistical inference, machine learning classification, and unsupervised clustering techniques to understand whether skate stance can be predicted from typical laterality patterns (hand, foot, eye dominance).
 
 You can also check the data in real time on [Skate Stance](https://mascarenhasav.github.io/skate_stance)
